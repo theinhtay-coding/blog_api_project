@@ -31,8 +31,11 @@ Rails.application.routes.draw do
   # For Blog
   get "/blog", to: "blog#index"  # Get all blog
   post "/blog", to: "blog#create" # Create blog
+  get "/blog/:id", to: "blog#show" # Show blog
   put "/blog/:id", to: "blog#update" # Update blog
   delete "/blog/:id", to: "blog#destroy" # Delete blog
+  get "/blog/:id/export", to: "blog#export" # Export single blog
+  get "/blog/export/all", to: "blog#bulk_export" # Export all blogs
 
   # Defines the root path route ("/")
   # root "posts#index"

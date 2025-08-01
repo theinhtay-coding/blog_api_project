@@ -35,6 +35,22 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
+  # Option 1: Gmail SMTP (for real email delivery)
+  # config.action_mailer.delivery_method = :smtp
+  # config.action_mailer.smtp_settings = {
+  #   address: "smtp.gmail.com",
+  #   port: 587,
+  #   domain: "gmail.com",
+  #   user_name: "theinhtay.dev@gmail.com",
+  #   password: "186345a9939ead",  # Use Gmail App Password, not your regular password
+  #   authentication: "plain",
+  #   enable_starttls_auto: true
+  # }
+
+  # Option 2: Letter Opener (for development - opens emails in browser)
+  config.action_mailer.delivery_method = :letter_opener
+  config.action_mailer.perform_deliveries = true
+
   # Set localhost to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 

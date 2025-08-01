@@ -9,7 +9,11 @@ class BlogPolicy < ApplicationPolicy
   # end
 
   def create?
-    admin?
+    admin? || user?
+  end
+
+  def show?
+    admin? || user?
   end
 
   def update?
@@ -18,6 +22,10 @@ class BlogPolicy < ApplicationPolicy
 
   def destroy?
     admin?
+  end
+
+  def export?
+    admin? || user?
   end
 
   def user?

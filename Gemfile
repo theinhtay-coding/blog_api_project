@@ -44,6 +44,10 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
+# For Excel export functionality
+gem "axlsx"
+gem "axlsx_rails"
+
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 # gem "rack-cors"
 
@@ -53,6 +57,9 @@ group :development, :test do
 
   # For console debugging
   gem "pry"
+
+  # For email testing in development
+  gem "letter_opener"
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
