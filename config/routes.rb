@@ -29,11 +29,10 @@ Rails.application.routes.draw do
   delete "/articles/:id", to: "articles#destroy"
 
   # For Blog
-  #  GET /blog => list all
-  get "/blog", to: "blog#index"
-
-  # POST /blog => create new
-  post "/blog", to: "blog#create"
+  get "/blog", to: "blog#index"  # Get all blog
+  post "/blog", to: "blog#create" # Create blog
+  put "/blog/:id", to: "blog#update" # Update blog
+  delete "/blog/:id", to: "blog#destroy" # Delete blog
 
   # Defines the root path route ("/")
   # root "posts#index"

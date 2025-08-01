@@ -1,15 +1,6 @@
 class ApplicationController < ActionController::API
-  # before_action :set_custom_header
-
-  # private
-
-  # def set_custom_header
-  #   my_header = request.headers["X-My-Custom-Header"]
-  #   unless my_header == "123456"
-  #     render json: { error: "Unauthorized", status: :Unauthorized }
-  #   end
-  # end
-  #
+  # include Pundit
+  include Pundit::Authorization
 
   before_action :authenticate_request
 
@@ -22,11 +13,21 @@ class ApplicationController < ActionController::API
   # Catch any other unexpected error
   rescue_from StandardError, with: :handle_internal_server_error
 
+  # Handle unauthorized error
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+
   def route_not_found
-    puts "working 404 ======================>"
     render json: { error: "Route not found" }, status: :not_found
   end
+
 private
+  def validate_req(schema)
+    result = schema.call(params.to_unsafe_h)
+    raise InvalidRequestException.new(result.errors.to_h) unless result.success?
+    binding.pry
+    result
+  end
+
   def record_not_found(error)
     render json: { error: error.message }, status: :not_found
   end
@@ -40,14 +41,21 @@ private
     render json: { error: "Internal server error" }, status: :internal_server_error
   end
 
+  def user_not_authorized(exception)
+    render json: { error: "Access denied: #{exception.policy.class} #{exception.query}" }, status: :forbidden
+  end
+
   def authenticate_request
     token = request.headers["Authorization"]&.split(" ")&.last
     raise JWT::DecodeError, "Token not provided" unless token
-
     decoded_token = JsonWebToken.decode(token)
-
+    raise JWT::DecodeError, "Invalid token" unless decoded_token
     @current_user = User.find(decoded_token[:user_id])
   rescue JWT::DecodeError, ActiveRecord::RecordNotFound => e
     render json: { error: "Unauthorized: #{e.message}" }, status: :unauthorized
+  end
+
+  def current_user
+    @current_user
   end
 end

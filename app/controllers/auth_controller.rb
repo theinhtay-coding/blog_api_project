@@ -2,8 +2,12 @@ class AuthController < ApplicationController
   skip_before_action :authenticate_request, only: [ :register, :login ]
 
   def register
-    puts "***** Process register *****"
-    user = User.new(register_params)
+    payload = validate_req(AuthSchema::Register)
+    # user = User.new(register_params)
+
+    binding.pry
+    user = User.new(payload.to_h)
+    binding.pry  # pauses here
     if user.save
       token = JsonWebToken.encode(user_id: user.id)
       render json: { user: user, token: token }, status: :created
@@ -15,9 +19,10 @@ class AuthController < ApplicationController
   def login
     puts "***** Process login *****"
     # binding.pry  # pauses here
-    user = User.find_by(email: params[:email])
+    payload = validate_req(AuthSchema::Login)
+    user = User.find_by(email: payload[:email])
     puts user
-    if user&.authenticate(params[:password])
+    if user&.authenticate(payload[:password])
       token = JsonWebToken.encode(user_id: user.id)
       render json: { user: user, token: token }, status: :ok
     else
@@ -26,7 +31,7 @@ class AuthController < ApplicationController
   end
 
   private
-  def register_params
-    params.permit(:email, :password, :company, :status, :role)
-  end
+  # def register_params
+  #   params.permit(:email, :password, :company, :status, :role)
+  # end
 end
