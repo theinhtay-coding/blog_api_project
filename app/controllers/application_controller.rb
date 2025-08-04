@@ -20,6 +20,13 @@ class ApplicationController < ActionController::API
     render json: { error: "Route not found" }, status: :not_found
   end
 
+  def res(data = {}, status = :ok, message = nil, meta: nil)
+    payload = data.is_a?(String) ? [ data ] : data
+    render json: {
+      data: payload
+    }.tap { |r| r[:meta] = meta if meta }, status: status
+  end
+
 private
   def validate_req(schema)
     result = schema.call(params.to_unsafe_h)

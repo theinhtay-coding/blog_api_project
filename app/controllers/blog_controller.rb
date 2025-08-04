@@ -3,9 +3,30 @@ class BlogController < ApplicationController
 
   def index
     authorize Blog
+
+    page = params[:page].to_i > 0 ? params[:page].to_i : 1
+    limit = params[:limit].to_i > 0 ? params[:limit].to_i : 10
+    offset = (page-1) * limit
+
+    total_blog = Blog.count
+    total_pages = (total_blog.to_f / limit).ceil
+
     blog = Blog.all
-    binding.pry # pauses here
-    render json: blog
+
+    # Search by blog_title if present
+    if params[:blog_title].present?
+      search_term = "%#{params[:blog_title]}%"
+      blog = blog.where("blog_title ILIKE ?", search_term)
+    end
+
+    # if params[:blog_title].present?
+    #   t = Blog.arel_table
+    #   blog_query = blog_query.where(t[:blog_title].matches("%#{params[:blog_title]}%"))
+    # end
+
+    blog = blog.offset(offset).limit(limit)
+    # binding.pry # pauses here
+    res(blog, :ok, meta: { page: page, total_pages: total_pages, limit: limit })
   end
 
   def show
